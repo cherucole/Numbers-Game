@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, Button, Image } from "react-native";
 import BodyText from "../components/BodyText";
 import TitleText from "../components/TitleText";
+import Colors from "../constants/colors";
 
 const GameOverScreen = props => {
   return (
@@ -9,13 +10,23 @@ const GameOverScreen = props => {
       <TitleText>The game is over!!</TitleText>
       <View style={styles.imageContainer}>
         <Image
-          source={require("../assets/success.png")}
+          source={require("../assets/success.png")} //loading image locally
+          //   source={{
+          //     uri:
+          //       "https://pbs.twimg.com/profile_images/438756755397300224/kp8rmJes_400x400.jpeg" //load image from url
+          //   }}
           style={styles.image}
           resizeMode="cover"
         />
       </View>
-      <BodyText>Number of rounds: {props.roundsNumber}</BodyText>
-      <BodyText>The Number was: {props.userNumber}</BodyText>
+      <View style={styles.resultContainer}>
+        <BodyText style={styles.resultText}>
+          Your phone needed{" "}
+          <Text style={styles.highlight}>{props.roundsNumber}</Text> rounds to
+          guess the number{" "}
+          <Text style={styles.highlight}>{props.userNumber}</Text>
+        </BodyText>
+      </View>
       <Button title="NEW GAME" onPress={props.onRestart} />
     </View>
   );
@@ -39,6 +50,18 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%"
+  },
+  resultContainer: {
+    marginHorizontal: 60,
+    marginVertical: 15
+  },
+  resultText: {
+    textAlign: "center",
+    fontSize: 20
+  },
+  highlight: {
+    color: Colors.primary,
+    fontFamily: "open-sans-bold"
   }
 });
 
