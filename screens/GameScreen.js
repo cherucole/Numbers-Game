@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, StyleSheet, Alert, ScrollView } from "react-native";
 import NumberContainer from "../components/NumberContainer";
 import Card from "../components/Card";
+import BodyText from "../components/BodyText";
 import DefaultStyles from "../constants/default-styles";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 
@@ -19,18 +20,27 @@ const generateNumberBetween = (min, max, exclude) => {
   }
 };
 
-const GameScreen = props => {
-  const [currentGuess, setCurrentGuess] = useState(
-    generateNumberBetween(1, 100, props.userChoice)
+const renderListItem = (value, numOfRound) => {
+  return (
+    <View key={value} style={styles.listIem}>
+      <BodyText>#{numOfRound}</BodyText>
+      <BodyText>{value}</BodyText>
+    </View>
   );
-  const [rounds, setRounds] = useState(0);
+};
+
+const GameScreen = props => {
+  const initialGuess = generateNumberBetween(1, 100, props.userChoice);
+
+  const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const [pastGuesses, setPastGuesses] = useState([initialGuess]);
   const currentLow = useRef(1);
   const currentHigh = useRef(100);
   const { userChoice, onGameOver } = props;
 
   useEffect(() => {
     if (currentGuess === userChoice) {
-      onGameOver(rounds);
+      onGameOver(pastGuesses.length);
     }
   }, [currentGuess, userChoice, onGameOver]);
 
@@ -47,7 +57,7 @@ const GameScreen = props => {
     if (direction === "lower") {
       currentHigh.current = currentGuess;
     } else {
-      currentLow.current = currentGuess;
+      currentLow.current = currentGuess + 1;
     }
     const nextNumber = generateNumberBetween(
       currentLow.current,
@@ -55,7 +65,8 @@ const GameScreen = props => {
       currentGuess
     );
     setCurrentGuess(nextNumber);
-    setRounds(curRounds => curRounds + 1);
+    // setRounds(curRounds => curRounds + 1);
+    setPastGuesses(curPastGuesses => [nextNumber, ...curPastGuesses]);
   };
   return (
     <View style={styles.screen}>
@@ -69,6 +80,13 @@ const GameScreen = props => {
           <AntDesign name="caretup" size={24} color="white" />
         </MainButton>
       </Card>
+      <View style={styles.list}>
+        <ScrollView>
+          {pastGuesses.map((guess, index) =>
+            renderListItem(guess, pastGuesses.length - index)
+          )}
+        </ScrollView>
+      </View>
     </View>
   );
 };
@@ -85,6 +103,20 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: 400,
     maxWidth: "90%"
+  },
+  list: {
+    flex: 1,
+    width: "80%"
+  },
+
+  listIem: {
+    borderColor: "#ccc",
+    borderWidth: 1,
+    padding: 15,
+    marginVertical: 10,
+    backgroundColor: "white",
+    flexDirection: "row",
+    justifyContent: "space-between"
   }
 });
 
